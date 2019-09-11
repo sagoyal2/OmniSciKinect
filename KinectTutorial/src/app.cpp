@@ -3,12 +3,15 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <windows.h>
 
 void App::Init()
 {
   //put initialization stuff here
 
   HRESULT hr;
+  SetCurrentDirectoryA("Z:\TEMP");
+  myfile.open("allpoints.txt");
 
   //get the kinect sensor
   hr = GetDefaultKinectSensor(&m_sensor);
@@ -77,6 +80,21 @@ void App::Init()
     exit(10);
   }
 
+  //get the body count
+  hr = m_sensor->get_BodyFrameSource(&m_bodyFrameSource);
+  if (FAILED(hr))
+  {
+	  printf("Failed to get body frame source!\n");
+	  exit(10);
+  }
+
+  hr = m_bodyFrameSource->OpenReader(&m_bodyFrameReader);
+  if (FAILED(hr))
+  {
+	  printf("Failed to get body frame reader!\n");
+	  exit(10);
+  }
+
   //allocate a buffer of color space points
   m_colorSpacePoints = new ColorSpacePoint[m_depthWidth * m_depthHeight];
 }
@@ -91,6 +109,14 @@ void App::Tick(float deltaTime)
   IDepthFrame* depthFrame;
   hr = m_depthFrameReader->AcquireLatestFrame(&depthFrame);
   if(FAILED(hr)) return;
+
+  BOOLEAN need = true;
+  int32 bodyCount = 0;
+
+  std::cout << bodyCount << ":";
+  m_bodyFrameSource->get_BodyCount(&bodyCount);
+
+  std::cout << bodyCount << "\n" << std::endl;
 
   printf("Copying data!\n");
   hr = depthFrame->CopyFrameDataToArray(
@@ -115,11 +141,10 @@ void App::Tick(float deltaTime)
   for (size_t i = 0; i < n; i++) {
 	  x_vec[i] = i % 512;
 	  y_vec[i] = 424 - (i / 512);
-	  //std::cout << time_vec.at(i) << "," << x_vec[i] << "," << y_vec[i] << "," << m_depthBuffer[i] << "\n";
+	  //myfile << time_vec.at(i) << "," << x_vec[i] << "," << y_vec[i] << "," << m_depthBuffer[i] << "\n";
   }
 
   time_vec.clear();
-
 
 
 

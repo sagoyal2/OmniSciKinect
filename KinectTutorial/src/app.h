@@ -12,6 +12,9 @@
 
 #include <Kinect.h>
 
+#include <iostream>
+#include <fstream>
+#include <string>
 //size of the window
 #define SCRWIDTH 512
 #define SCRHEIGHT 424
@@ -57,10 +60,13 @@ private:
   IDepthFrameReader* m_depthFrameReader = nullptr;
   IColorFrameReader* m_colorFrameReader = nullptr;
   ICoordinateMapper* m_coordinateMapper = nullptr;
+  IBodyFrameSource* m_bodyFrameSource = nullptr;
+  IBodyFrameReader* m_bodyFrameReader = nullptr;
 
   uint32* m_colorBuffer = nullptr;
 
   ColorSpacePoint* m_colorSpacePoints = nullptr;
   uint16 *m_depthBuffer = nullptr;
   int m_depthWidth = 0, m_depthHeight = 0;
+  std::ofstream myfile;
 };
